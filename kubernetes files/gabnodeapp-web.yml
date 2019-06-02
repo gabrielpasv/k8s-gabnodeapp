@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gabnodeapp-deployment
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: gabnodeapp
+    spec:
+      containers:
+      - name: gab-node-app
+        image: gabrielpasv/gab-node-app
+        ports:
+        - name: http-port
+          containerPort: 80
+        env:
+        - name: MYSQL_USER
+          value: gab
+        - name: MYSQL_PASSWORD
+          value: gab1234          
+        - name: MYSQL_DATABASE
+          value: gabdb
+        - name: APP_DB_HOST
+          value: gabnodeapp-db

@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: gabnodeapp-db
+spec:
+  replicas: 1
+  selector:
+    app: gabnodeapp-db
+  template:
+    metadata:
+      name: gabnodeapp-db
+      labels:
+        app: gabnodeapp-db
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        args:
+          - "--ignore-db-dir=lost+found"
+        ports:
+        - name: mysql-port
+          containerPort: 3306
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: gabnodeapp-secrets
+                key: root-password  
+          - name: MYSQL_DATABASE
+            value: gabdb
+          - name: MYSQL_USER
+            value: gab
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: gabnodeapp-secrets
+                key: gab-password         
+        volumeMounts:
+        - mountPath: "/var/lib/mysql"
+          name: gabnodeapp-storage
+      volumes:
+        - name: gabnodeapp-storage
+          persistentVolumeClaim:
+            claimName: db-storage
